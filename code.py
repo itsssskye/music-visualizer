@@ -28,6 +28,7 @@ if device_info is None:
 
 # Setup plot
 fig, ax = plt.subplots()
+fig.canvas.manager.set_window_title("Music Visualizer")
 
 bars = ax.bar(range(bars_count), np.zeros(bars_count), width=0.9)
 
