@@ -1,6 +1,7 @@
 import sounddevice as sd
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.fft import rfft
 from matplotlib.animation import FuncAnimation
 
 samplerate = 44100
@@ -42,23 +43,25 @@ def audio_callback(indata, frames, time, status):
 def update(frame):
     global latest_data
 
-    # Split waveform into chunks
-    chunked = np.array_split(latest_data, bars_count)
-    heights = np.array([np.mean(np.abs(chunk)) for chunk in chunked])
+    # Apply FFT on the current audio block
+    fft_data = np.abs(rfft(latest_data))
 
-    # Normalize to max of current frame
+    # Pick bars_count evenly spaced frequencies
+    indices = np.linspace(0, len(fft_data) - 1, bars_count, dtype=int)
+    heights = fft_data[indices]
+
+    # Normalize so bars fit nicely
     if np.max(heights) > 0:
         heights = heights / np.max(heights)
 
-    # Amplify
+    # Amplify peaks
     heights = heights * amplify
 
-    # Update bars (centered)
+    # Update bars (centered, so they go both up & down)
     for rect, h in zip(bars, heights):
         rect.set_height(h)
-        rect.set_y(-h/2)
+        rect.set_y(-h / 2)
 
-    # Keep y-axis fitting the amplification
     ax.set_ylim(-amplify, amplify)
 
     return bars
