@@ -7,7 +7,10 @@ from matplotlib.animation import FuncAnimation
 samplerate = 44100
 blocksize = 2048
 bars_count = 100
-amplify = 10   # make this higher if still too short
+amplify = 20   # make this higher if still too short
+bar_heights = np.zeros(bars_count)  # global
+decay_rate = 0.8  # lower is faster
+smooth_factor = 0.2  # higher is smoother
 
 device_name = "BlackHole"
 
@@ -41,28 +44,32 @@ def audio_callback(indata, frames, time, status):
     latest_data = indata[:, 0]  # mono
 
 def update(frame):
-    global latest_data
+    global latest_data, bar_heights
 
-    # Apply FFT on the current audio block
-    fft_data = np.abs(rfft(latest_data))
+    # FFT on current block
+    fft_data = np.abs(np.fft.rfft(latest_data))
 
-    # Pick bars_count evenly spaced frequencies
+    # Choose evenly spaced bins
     indices = np.linspace(0, len(fft_data) - 1, bars_count, dtype=int)
     heights = fft_data[indices]
 
-    # Normalize so bars fit nicely
+    # Normalize
     if np.max(heights) > 0:
         heights = heights / np.max(heights)
 
     # Amplify peaks
     heights = heights * amplify
 
-    # Update bars (centered, so they go both up & down)
-    for rect, h in zip(bars, heights):
-        rect.set_height(h)
-        rect.set_y(-h / 2)
+    # Smooth & decay for nicer look
+    bar_heights[:] = bar_heights * decay_rate + heights * smooth_factor
 
-    ax.set_ylim(-amplify, amplify)
+    # Update bars (centered)
+    for rect, h in zip(bars, bar_heights):
+        rect.set_height(h)
+        rect.set_y(-h/2)
+
+    # Keep y-axis slightly bigger than amplify for padding
+    ax.set_ylim(-amplify*1.1, amplify*1.1)
 
     return bars
 
