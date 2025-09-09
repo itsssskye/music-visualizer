@@ -69,7 +69,7 @@ def update(frame):
         rect.set_y(-h/2)
 
     # Keep y-axis slightly bigger than amplify for padding
-    ax.set_ylim(-amplify*1.1, amplify*1.1)
+    ax.set_ylim(-amplify, amplify)
 
     return bars
 
