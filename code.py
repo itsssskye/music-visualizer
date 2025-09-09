@@ -1,7 +1,9 @@
-import sounddevice as sd
-import numpy as np
+import matplotlib as mpl
+mpl.rcParams['toolbar'] = 'None'
+
 import matplotlib.pyplot as plt
-from numpy.fft import rfft
+import numpy as np
+import sounddevice as sd
 from matplotlib.animation import FuncAnimation
 
 samplerate = 44100
@@ -26,15 +28,15 @@ if device_info is None:
 
 # Setup plot
 fig, ax = plt.subplots()
+
 bars = ax.bar(range(bars_count), np.zeros(bars_count), width=0.9)
 
-ax.set_ylim(-1, 1)
-ax.set_xlim(0, bars_count)
-ax.set_title("Waveform Bars Visualizer")
-ax.set_xlabel("Samples (chunked)")
-ax.set_ylabel("Amplitude")
+fig.patch.set_facecolor('black')
+ax.set_facecolor('black')
+plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-latest_data = np.zeros(blocksize)
+latest_data = np.zeros(blocksize)  # define globally
+bar_heights = np.zeros(bars_count)  # keep this global too
 
 # Audio callback
 def audio_callback(indata, frames, time, status):
