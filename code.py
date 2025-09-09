@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Qt5Agg')
 import matplotlib as mpl
 mpl.rcParams['toolbar'] = 'None'
 
@@ -29,6 +31,20 @@ if device_info is None:
 # Setup plot
 fig, ax = plt.subplots()
 fig.canvas.manager.set_window_title("Music Visualizer")
+
+manager = plt.get_current_fig_manager()
+window = manager.window
+
+# Get screen size
+screen = window.screen().availableGeometry()
+screen_width, screen_height = screen.width(), screen.height()
+
+# Get window size
+window_width, window_height = window.width(), window.height()
+
+# Move window to center
+window.move(int((screen_width - window_width) / 2),
+            int((screen_height - window_height) / 2))
 
 bars = ax.bar(range(bars_count), np.zeros(bars_count), width=0.9)
 
