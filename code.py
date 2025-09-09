@@ -50,22 +50,21 @@ def update(frame):
     fft_data = np.abs(np.fft.rfft(latest_data))
 
     # Choose evenly spaced bins
-    indices = np.linspace(0, len(fft_data) - 1, bars_count, dtype=int)
-    heights = fft_data[indices]
+    indices = np.linspace(0, len(fft_data) - 1, bars_count//2, dtype=int)
+    heights_half = fft_data[indices]
 
     # Normalize
-    if np.max(heights) > 0:
-        heights = heights / np.max(heights)
+    if np.max(heights_half) > 0:
+        heights_half = heights_half / np.max(heights_half)
 
     # Amplify
-    heights = heights * amplify
+    heights_half = heights_half * amplify
 
-    # Shift low frequencies toward center
-    half = bars_count // 2
-    heights = np.concatenate((heights[half:], heights[:half]))
+    # Mirror the right half to the left for symmetry
+    heights = np.concatenate((heights_half[::-1], heights_half))
 
-    # Smooth & decay
-    bar_heights[:] = bar_heights * decay_rate + heights * smooth_factor
+    # Smooth & Decay
+    bar_heights[:] = bar_heights * 0.5 + heights * 0.5  # adjust 0.5+0.5 for reactivity
 
     # Update bars
     for rect, h in zip(bars, bar_heights):
