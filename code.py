@@ -46,8 +46,10 @@ window_width, window_height = window.width(), window.height()
 window.move(int((screen_width - window_width) / 2),
             int((screen_height - window_height) / 2))
 
-bars = ax.bar(range(bars_count), np.zeros(bars_count), width=0.9)
+bars = ax.bar(range(bars_count), np.zeros(bars_count), width=0.6)
 
+for rect in bars:
+    rect.set_color('white')
 fig.patch.set_facecolor('black')
 ax.set_facecolor('black')
 plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
