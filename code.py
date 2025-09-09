@@ -8,7 +8,7 @@ blocksize = 2048
 bars_count = 100
 amplify = 10   # make this higher if still too short
 
-device_name = "BlackHole"  # your input device
+device_name = "BlackHole"
 
 # Find BlackHole device index
 device_info = None
