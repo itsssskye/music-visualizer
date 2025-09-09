@@ -57,18 +57,21 @@ def update(frame):
     if np.max(heights) > 0:
         heights = heights / np.max(heights)
 
-    # Amplify peaks
+    # Amplify
     heights = heights * amplify
 
-    # Smooth & decay for nicer look
+    # Shift low frequencies toward center
+    half = bars_count // 2
+    heights = np.concatenate((heights[half:], heights[:half]))
+
+    # Smooth & decay
     bar_heights[:] = bar_heights * decay_rate + heights * smooth_factor
 
-    # Update bars (centered)
+    # Update bars
     for rect, h in zip(bars, bar_heights):
         rect.set_height(h)
         rect.set_y(-h/2)
 
-    # Keep y-axis slightly bigger than amplify for padding
     ax.set_ylim(-amplify*1.1, amplify*1.1)
 
     return bars
